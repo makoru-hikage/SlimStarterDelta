@@ -1,0 +1,55 @@
+{# 
+    macro: data_table
+
+    @param: [String] model_name - It is the name of the model, all lowercase
+    @param: [Eloquent Model to Array] used_model - The Model used to fill data for every row
+    @param: [Assoc. Array of Strings] table_column_names - the list of actual SQL table columns 
+            as keys with values as the aliases, such as 'name' => 'Name', to be displayed as table headers
+    @param: [Boolean] update_and_delete_is_allowed - Determines whether to show the Edit and Delete buttons
+    @param: [String] bound_modal - The id of the modal used to append new rows to this table, seen in edit buttons
+    @param: [String] bound_form - The id of the form where the request data will be extracted from.
+
+    Data tables are to be filled with result sets of MySQL SELECT queries, whether be it a join or a single table
+    or something with subquery. Empty results or wrong queries mean empty table. The id attribute of the table 
+    depends on the model_name (i.e. "user-table") 
+ #}
+
+{% macro data_table(model_name, used_model, table_column_names, update_and_delete_is_allowed, bound_modal, bound_form, url="") %}
+<div class="table-responsive">
+    
+        <table id="{{ model_name }}-table" data-model="{{ model_name }}" class="table table-striped table-condensed table-hover dataTable" data-action="{{ url }}" data-modal="{{ bound_modal }}" data-form="{{ bound_form }}">
+            <thead class="sorting">
+                <tr>
+                    {% for database_column_name, frontend_column_name in table_column_names %}
+                        <th data-column="{{ database_column_name }}">{{ frontend_column_name }}</th>
+                    {% endfor %}
+                    {% if update_and_delete_is_allowed %}
+                    <th style="width:15%" class="text-center">Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in used_model  %}
+                <tr id="{{ model_name }}-row-{{ record.id }}" class="table-row" data-id="{{ record.id }}">
+                    
+                    {% for column_name in table_column_names|keys %}
+                        {% for key, value in record if key == column_name %}
+                            <td data-column="{{ key }}">{{ value }}</td>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% if update_and_delete_is_allowed %}
+                    <td class="text-center ">
+                        <a data-id="{{ record.id }}" data-modal="{{ bound_modal }}" data-form="{{ bound_form }}" data-action="{{ url }}" data-method="PUT" class="btn btn-xs btn-primary row-edit-button" href="#"><i class="fa fa-edit fa-fw"></i>Edit</a>
+                        <a data-id="{{ record.id }}" data-action="{{ url }}" data-method="DELETE" data-table="#{{ model_name }}-table"class="btn btn-xs btn-danger row-delete-button" href="#"><i class="fa fa-times fa-fw"></i>Remove</a>
+                    </td>
+                    {% endif %}
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+</div>
+{% endmacro %}{# macro data_table #}

@@ -1,0 +1,19 @@
+<!-- Navigation -->
+<aside id="menu">
+    <div id="navigation">
+        {{
+            render_menu('main_sidebar', 'ul',
+                {
+                    "attributes":{"class": "nav", "id":"side-menu"},
+                    "active" : {
+                        "class": "active"
+                    }
+                }
+            )
+            | raw
+        }}
+        <!-- /#side-menu -->
+    </div>
+    <!-- /.sidebar-collapse -->
+</aside>
+<!-- /.navbar-static-side -->

@@ -1,0 +1,186 @@
+{# Using Sublime Text or any other similar editors? Press Ctrl + R for quick browsing #}
+
+{#
+    macro: modal
+
+    @param: [String (prefix)] modal_id - The value of the modal's id attribute plus "-modal"
+    @param: [String] modal_header_title - The HTML text tagged with a "modal-title" id.
+    @param: [Twig Set Block] modal_body_content, modal_footer - self-explanatory
+
+    This is the one that pops up whether you have to fill a form or show more data about a record.
+    This modal, box, or whatever will "grab your attention" by showing itself and darkening the background. 
+ #}
+{% macro modal(modal_id, modal_header_title, modal_body_content, modal_footer) %}
+<div class="modal fade" id="{{ modal_id }}-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal-title">{{ modal_header_title }}</h4>
+            </div>
+
+            
+            <div class="modal-body">
+                {{ modal_body_content }}            
+            </div>
+            
+
+            <div class="modal-footer">
+                {{ modal_footer }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %} {# macro modal #}
+
+{# 
+    macro: submission_form
+
+    @param: [String (prefix)] model_name - If you will Add or Edit a record of an Eloquent Model, you need this.
+            A form for what? Users? Groups? Students? Whatever.
+    @param: [Twig Set Block] model_form_fields - Declare a Twig Set Block of input fields first, then we'll talk.
+    @param: [String (URL)] action - Fill this only if you shall make the usual synchronous HTTP request. URL here 
+    @param: [String ('POST' or 'PUT')] method - (See the 'action' parameters) What method?
+
+    Please assure that the model_name corresponds or sounds with an Eloquent Model you made.
+ #}
+{% macro submission_form(id, model_name, modal_form_fields, action="", method="") %}
+<form role="form" class="form-horizontal" id="{{ id }}-form-data" action="{{ action }}" method="{{ method }}" data-model="{{ model_name }}">
+    <input class="hidden-id-input" type="hidden" id="{{ model_name }}_id" name="id" value="">
+    {{ modal_form_fields }}
+</form>
+
+{% endmacro %} {# macro modal_form #}
+
+
+{# 
+    macro: plain_field
+
+    @param: [String (prefix)] id - You better prefix it like what you do with the 'submission_form'
+    @param: [String] name - Make sure it matches a column name in a MySQL table.
+    @param: [String] type - The usual one is text. You can also turn it into a checkbox, radio, or whatever is possible.
+    @param: [String] value - The piece of data you'll submit when you make a POST or PUT request, duh.
+    @param: [String] placeholder - It is what you see in an empty field; it gives you an idea what to put.
+    @param: [String] additional_class - Not only for decors but also for validation.
+    @param: [String] additional_attributes 
+
+ #}
+{% macro plain_field(id, name, label, type="text", value="", placeholder="", additional_class="", additional_attributes="") %}
+    <div class="form-group">
+    
+    {% if type != "checkbox" or type != "radio" %}
+        <label for="{{ name }}" class="col-lg-4 control-label">{{ label }}</label>
+    <div class="col-lg-8">
+        <input type="{{ type }}" class="input-sm form-control {{ additional_class }}" name="{{ name }}" id="{{ id }}" value="{{ value }}" placeholder="{{ placeholder }}" {{ additional_attributes }}>
+    </div>
+
+    {% else %}
+        <label for="{{ name }}" class="control-label col-lg-4 " >{{ label }}</label>
+        <input type="{{ type }}" class="input-sm {{ additional_class }}" name="{{ name }}" id="{{ id }}" value="{{ value }}" placeholder="{{ placeholder }}">
+    {% endif %}
+
+    </div>
+{% endmacro %} {# macro plain_field #}
+
+{# 
+    macro: select_field
+    
+    @param: [String] id
+    @param: [String] name
+    @param: [String] label
+    @param: [Array] options - the available values of a select form
+    @param: [String] additional_class
+    @param: [String] additional_attribute
+
+    This is your typical drop-down uneditable select form
+
+ #}
+{% macro select_field(id, name, label, options, additional_class="", additional_attribute="") %}
+    <div class="form-group">
+        <label for="{{ name }}" class="col-lg-4 control-label">{{ label }}</label>
+        <div class="col-lg-8">
+            <select id="{{ id }}" name="{{ name }}" class="form-control {{ additional_class }}" {{ additional_attribute }}>
+                {% for option in options %}
+                  <option>{{ option }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{# 
+    macro: add_button
+    
+    @param: [String (prefix)] id - see for yourself
+    @param: [String] data_modal - id value of the modal where the submit will button be bound
+    @param: [String] data_form - id value of the form where the submit button will be bound
+
+    WARNING: Bind this inside a modal with a submission form inside it or in a submission form.
+
+    This button is meant for showing a modal with a empty data form to be used by the 
+    cancel_and_save_buttons later
+
+ #}
+
+{% macro add_button(id, label="Add", data_modal="", data_form="", data_save_button="") %}
+    <button type="button" 
+        id="btn-{{ id_add_button }}-add" 
+        class="btn btn-success pull-right form-add-button"
+        data-modal="{{ data_modal }}"
+        data-form="{{ data_form }}"
+        data-save-button="{{ data_save_button }}">
+        <i class="fa fa-plus"></i>
+        {{ label }}
+    </button>
+{% endmacro %}{# macro add_button #}
+
+
+{# 
+    macro: cancel_and_save_buttons
+    
+    @param: [String (prefix)] id - see for yourself
+    @param: [String] data_modal - id value of the modal where the submit will button be bound
+    @param: [String] data_form - id value of the form where the submit button will be bound
+    @param: [String] data_table - id value of the table that will append the data from the form 
+
+    WARNING: Bind this inside a modal with a submission form inside it or in a submission form.
+
+    "Oooooo... What does this button do?"
+
+ #}
+{% macro cancel_and_save_buttons(id, data_modal="", data_form="", data_table="") %}
+    <button type="button" class="btn btn-default btn-sm form-clear-button pull-left" data-form="{{ data_form }}">Clear</button>
+    <button type="button" class="btn btn-default btn-sm form-cancel-button" data-dismiss="modal">Cancel</button>
+    <button type="submit" 
+        class="btn btn-success btn-sm form-save-button" 
+        id="btn-{{ id }}-save" 
+        data-modal="{{ data_modal }}" 
+        data-form="{{ data_form }}" 
+        data-table="{{ data_table }}" 
+        data-action="" 
+        data-method="">
+        Save
+    </button>
+{% endmacro %}{# macro cancel_and_save_buttons #}
+
+{# 
+    macro: select_field
+    
+    @param: [String] id
+    @param: [String] label
+    @param: [String] icon - see fa icons
+    @param: [String] class
+    @param: [String] additional_attribute
+
+ #}
+{% macro custom_button(id, label, icon, class="", additional_attributes="") %}
+    <button type="button" 
+        id="{{ id }}" 
+        class="btn {{ class }}"
+         {{ additional_attributes }}>
+        <i class="fa {{ icon }}"></i>
+        {{ label }}
+    </button>
+{% endmacro %}{# macro custom_button #}
+

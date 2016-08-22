@@ -1,0 +1,90 @@
+{# 
+    macro: hpanel
+
+    @params: [Twig Set Block] header_content, body_content, footer_content - self-explanatory
+    @params: [String] additional_classes - You know how to decorate with CSS and class attributes, right?
+
+    Horizontal panels are crucial to good presentation of the site. It will be so common. It is your garden
+    variety general purpose containers.
+ #}
+{% macro hpanel(header_content, body_content, footer_content, additional_classes="", additional_attributes="") %}
+<div class="hpanel {{ additional_classes }}" {{ additional_attributes }}>
+<!-- PANEL'S HEADER -->
+    <div class="panel-heading hbuilt">    
+        {{ header_content }}         
+    </div>
+<!-- PANEL'S BODY -->
+    <div class="panel-body" style="display:block;">
+        {{ body_content }}
+    </div>
+<!-- PANEL'S FOOTER -->
+    <div class="panel-footer" style="display:block;">
+        {{ footer_content }}
+    </div>
+
+</div>
+{% endmacro %} {# macro hpanel #}
+
+
+{# 
+    macro: record_list_header
+
+    @param: [String] data_form - The header title
+    @param: [Twig Block Set] auxillary_buttons - Buttons such as add buttons are usually
+            set here
+
+    This is what you usually put at the header of a hpanel
+
+ #}
+{% macro record_list_header(header, auxillary_buttons) %}
+<div class="row">
+            <div class="col-md-9">
+                <h3>{{ header }}</h3>
+            </div>
+            <div class="col-md-3">
+                {{ auxillary_buttons }}
+            </div>
+        </div>
+{% endmacro %} {# macro record_list_header #}
+
+{# 
+    macro: hpanel_tabs
+
+    @param: [Array of Twig Objects] tabs - each must have an 'id', 'content', and a tab 'label'
+
+    This is what you always see in Properties window (of any desktop managers)
+
+ #}
+{% macro hpanel_tabs(tabs) %}
+    
+    <ul class="nav nav-tabs">
+        {% for tab in tabs %}
+            {% if loop.index == loop.first %}
+                <li class="active">
+            {% else %}
+                <li class>
+            {% endif %}
+                <a data-toggle="tab" 
+                href="#{{ tab.id }}" 
+                {% if loop.index == loop.first %}
+                    aria-expanded="true" class="btn-md "
+                {% else %}
+                    aria-expanded="false" class="btn-md"
+                {% endif %}
+                > {{ tab.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+
+    <div class="tab-content">
+
+        {% for tab in tabs %}
+            <div id="{{ tab.id }}" class="tab-pane {% if loop.index == loop.first %} active {% else %} {% endif %}">
+                <div class="panel-body">
+                    {{ tab.content }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

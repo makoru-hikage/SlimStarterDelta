@@ -1,0 +1,21 @@
+{% extends 'master.twig' %}
+
+{% block body %}
+
+	{{include('header.twig')}}
+	{% block sidebar %}{% endblock %}
+
+	<!-- Main Wrapper -->
+	<div id="wrapper">
+
+    	<div class="content animate-panel" data-effect="fadeInUp" data-child="table-row">
+        	{% block content %}
+                 
+        	{% endblock %}
+    	</div>
+
+    {{include('footer.twig')}}
+
+	</div>        
+
+{% endblock %}
